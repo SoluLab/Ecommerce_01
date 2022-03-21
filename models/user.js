@@ -125,11 +125,6 @@ const UserSchema = new Schema({
         type: Number,
         default: null,
     },
-
-    // uuid: {
-    //     type: String,
-    //     default: ""
-    // },
     logs: [],
 
     created_at: {

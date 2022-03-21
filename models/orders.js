@@ -2,29 +2,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const ProductSchema = new Schema({
-
-    category: {
-        type: String
-    },
-    subcategory: {
-        type: String
-    },
-
-    brand: {
-        type: String,
-    },
-    model: {
-        type: String
+    seller_id: {
+        type: Schema.ObjectId,
+        ref: 'Product',
+        default: null
     },
     product: {
         type: Schema.ObjectId,
         ref: 'Product',
         default: null
-    },
-    unit: {
-        type: String,
-        enum: ['kg', 'mg', 'g', 'piece', 'l', 'ml', 'Pack'],
-        default: 'piece'
     },
     product_no: {
         type: String,
@@ -34,15 +20,7 @@ const ProductSchema = new Schema({
         type: String,
         default: ""
     },
-    description: {
-        type: String,
-        default: ""
-    },
     mrp: {
-        type: Number,
-        default: 0
-    },
-    selling_price: {
         type: Number,
         default: 0
     },
@@ -50,11 +28,11 @@ const ProductSchema = new Schema({
         type: Number,
         default: 0
     },
-    unit_base_price: {
+    rate: {
         type: Number,
         default: 0
     },
-    unit_price: {
+    tax_amount: {
         type: Number,
         default: 0
     },
@@ -69,28 +47,9 @@ const ProductSchema = new Schema({
         type: String,
         default: 'exclusive'
     },
-    tax: {
+    tax_rate: {
         type: String,
         default: ""
-    },
-    tax_rate: {
-        type: Number,
-        default: 0
-    },
-    tax_amount: {
-        type: Number,
-        default: 0
-    },
-    tax_info: {},
-    status: {
-        type: String,
-        enum: ['Cancelled', 'Confirmed', 'Returned', 'Delivered'],
-        default: 'Confirmed',
-        required: [true, 'Status is required']
-    },
-    rate: {
-        type: Number,
-        default: 0
     },
     amount: {
         type: Number,
@@ -98,10 +57,6 @@ const ProductSchema = new Schema({
     },
 
     discount: {
-        type: String,
-    },
-
-    discount_total: {
         type: Number,
         default: 0
     },
@@ -179,7 +134,7 @@ const StatusSchema = new Schema({
     status: {
         type: String,
         enum: ['Cancelled', 'Ordered', 'Shipped', 'Confirmed', 'Delivered', 'Returned', 'Open'],
-        default: 'Ordered',
+        default: 'Confirmed',
     },
     remark: {
         type: String,
@@ -235,10 +190,6 @@ const OrderSchema = new Schema({
         type: Date,
         default: null
     },
-    due_date: {
-        type: Date,
-        default: null
-    },
     order_no: {
         type: String,
         default: ''
@@ -247,7 +198,7 @@ const OrderSchema = new Schema({
         type: String,
         default: ""
     },
-    reference_no: {
+    tracking_no: {
         type: String,
         default: ""
     },

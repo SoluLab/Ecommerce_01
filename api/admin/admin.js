@@ -153,14 +153,10 @@ router.post('/item/create', xAccessToken.token, async function (req, res, next) 
         // product_no = product_no.toUpperCase();
         let unit = req.body.unit;
         let loggedInDetails = await User.findById(user).exec();
-        // var floor = Math.floor(parseFloat(req.body.purchase_price).toFixed(2));
-        // var ceil = Math.ceil(parseFloat(req.body.purchase_price).toFixed(2));
-        // // 'price.purchase_price': { $gte: floor, $lte: ceil },
         let product = await Product.find({ product_no: product_no, admin: user }).exec();
         if (product.length == 0) {
             let quantity = req.body.quantity
             let tax_slab = req.body.tax
-            // var tax_details = req.body.tax_details
             let remark = req.body.remark;
             let margin = req.body.margin
             let base_price = parseFloat(req.body.base_price)
@@ -525,8 +521,8 @@ router.get('/orders/list/get', xAccessToken.token, async (req, res, next) => {
                 payment: order.payment,
                 product: order.product,
                 isInvoice: order.isInvoice,
-                created_at: product.created_at,
-                updated_at: product.updated_at
+                created_at: order.created_at,
+                updated_at: order.updated_at
 
             });
         });
@@ -561,6 +557,52 @@ router.get('/order/details/get', xAccessToken.token, async (req, res, next) => {
                 responseMessage: "Success",
                 responseData: order
             });
+        } else {
+            res.status(400).json({
+                responseCode: 400,
+                responseMessage: "order not found",
+                responseData: {}
+            });
+        }
+    }
+});
+
+router.put('/order/status/update', xAccessToken.token, async (req, res, next) => {
+    var rules = {
+        id: 'required',
+        status: 'required'
+    };
+    var validation = new Validator(req.body, rules);
+    if (validation.fails()) {
+        res.status(422).json({
+            responseCode: 422,
+            responseMessage: "Validation Error",
+            responseData: validation.errors.all()
+        });
+    } else {
+        let token = req.headers['x-access-token'];
+        let secret = config.secret;
+        let decoded = jwt.verify(token, secret);
+        let user = decoded.user;
+
+        var order = await Orders.findOne({ _id: mongoose.Types.ObjectId(req.body.id) }).exec();
+        if (order) {
+            await Orders.findOneAndUpdate({ _id: mongoose.Types.ObjectId(req.body.id) }, { $set: { 'status.status': req.body.status } }, { new: true }, async (err, doc) => {
+                if (err) {
+                    res.status(422).json({
+                        responseCode: 422,
+                        responseMessage: "Error Occured!",
+                        responseData: err
+                    });
+                } else {
+                    res.status(200).json({
+                        responseCode: 200,
+                        responseMessage: "Order " + req.body.status + " Successfully",
+                        responseData: {}
+                    });
+                }
+            }).clone();
+
         } else {
             res.status(400).json({
                 responseCode: 400,

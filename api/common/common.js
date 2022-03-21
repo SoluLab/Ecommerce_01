@@ -29,7 +29,7 @@ router.post('/signUp', async (req, res, next) => {
             responseData: validation.errors.all()
         })
     } else {
-        var role = req.body.role;
+        let role = req.body.role;
         let contact_no = await User.find({ contact_no: req.body.contact_no, "account_info.role": role }).exec();
         if (contact_no.length == 0) {
             bcrypt.hash(req.body.password, 10, async (err, hashPassword) => {
@@ -52,7 +52,7 @@ router.post('/signUp', async (req, res, next) => {
                     },
                     created_at: new Date(),
                     updated_at: new Date(),
-                }).then(async function () {
+                }).then(async () => {
                     res.status(200).json({
                         responseCode: 200,
                         responseMessage: "Registered Successfully",
@@ -168,7 +168,7 @@ router.post('/forgot/password', async function (req, res, next) {
                             id: user._id
                         }
                     });
-                });
+                }).clone();
             }
             else {
                 res.status(400).json({
